@@ -1,0 +1,129 @@
+Give me the javascript 3dmol.js code (and nothing else, and no comments) that replaces [INSERT CODE HERE] based on the instructions below [END].
+If you do not have the protein or molecule asked for, query it from a database.
+
+These are examples:
+
+user input: 
+fetch and display hemoglobin
+response:
+// load pdb file
+let data = $.get("https://files.rcsb.org/download/1A3N.pdb", function(data) {
+    viewer.addModel(data, "pdb");
+    // set the style to cartoon
+    viewer.setStyle({}, {cartoon: {}});
+    // zoom to fit molecules and render
+    viewer.zoomTo();
+    viewer.render();
+});
+
+user input:
+fetch and display the structure of benzene
+response:
+// load pdb file
+let data = $.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/7732-18-5/record/SDF?record_type=3d&response_type=save&response_basename=Structure", function(data) {
+    viewer.addModel(data, "sdf");
+    // set the style to cartoon
+    viewer.setStyle({}, {stick: {}});
+    // zoom to fit molecules and render
+    viewer.zoomTo();
+    viewer.render();
+});
+
+user input:
+change the style to cartoon
+response:
+viewer.setStyle({}, {cartoon: {} });
+
+user input:
+change the color of cytosines to red
+response:
+// select and color cytosines in red
+viewer.setStyle({resn: "CYT"}, {stick: {color: "red"}});
+
+user input:
+fetch the structure of oxamic acid and display it
+response:
+// getting and displaying the .sdf file for benzene and adding the model to the viewer
+let data = $.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/oxamic%20acid/record/SDF?record_type=3d&response_type=save&response_basename=Structure", function(data) {
+    viewer.addModel(data, "sdf");
+    viewer.setStyle({}, {stick: {}});
+    viewer.zoomTo();
+    viewer.render();
+});
+
+user input:
+display the HOMO orbital for oxamic acid
+results:
+// get the homo orbital in .cube format and display it
+$.get('resources/oxamic-acid-homo.cube',
+    function (data) {
+        var voldata = new $3Dmol.VolumeData(data, 'cube');
+        // display the orbital contained in the .cube file
+        viewer.addIsosurface(voldata, {
+            isoval: 0.03,
+            color: 'blue',
+            alpha: 0.95,
+            smoothness: 10,
+        });
+        viewer.addIsosurface(voldata, {
+            isoval: -0.03,
+            color: 'red',
+            alpha: 0.95,
+            smoothness: 10,
+        });
+        viewer.render();
+    },
+    'text'
+);
+
+user input:
+display the LUMO orbital for oxamic acid
+results:
+// get the homo orbital in .cube format and display it
+$.get('resources/oxamic-acid-lumo.cube',
+    function (data) {
+        var voldata = new $3Dmol.VolumeData(data, 'cube');
+        // display first half of the orbital contained in the .cube file
+        viewer.addIsosurface(voldata, {
+            isoval: 0.03,
+            color: 'blue',
+            alpha: 0.95,
+            smoothness: 10,
+        });
+        // display second half of the orbital contained in the .cube file
+        viewer.addIsosurface(voldata, {
+            isoval: -0.03,
+            color: 'red',
+            alpha: 0.95,
+            smoothness: 10,
+        });
+        viewer.render();
+    },
+    'text'
+);
+
+user input:
+clear the orbitals
+response:
+viewer.removeAllShapes();
+
+This concludes the examples.
+
+[START]
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NLP 3Dmol.js</title>
+        <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <div id="viewer" style="height: 600px; width: 800px;"></div>
+        <script>
+            // create viewer
+            var viewer = $3Dmol.createViewer("viewer", {backgroundColor: "white"});
+            [INSERT CODE HERE]
+        </script>
+    </body>
+</html>
+[END]

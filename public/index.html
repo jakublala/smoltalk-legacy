@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NLP 3Dmol.js</title>
+        <link rel="stylesheet" href="styles/index.css">
+        <link rel="stylesheet" href="styles/github-dark.min.css">
+        <script src="resources/highlight.min.js"></script>
+        <script src="resources/3Dmol-min.js"></script>
+        <script src="resources/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <div class="container" id="prompt-inputs">
+            <form id="prompt-form">
+                <input type="text" id="prompt-input" name="prompt" placeholder="describe what you would like to display">
+                <button type="submit">submit</button>
+                <button type="reset">clear</button>
+            </form>
+            <div id="prompt-hist"></div>
+        </div>
+        <div class="container" id="output-container">
+            <pre><code class="language-javascript" id="model-outputs"></code></pre>
+        </div>
+        <div class="container" id="viewer-container"> 
+            <div id="viewer"></div>
+        </div>
+        <script>
+            var viewer = $3Dmol.createViewer("viewer", {backgroundColor: "black"});
+            
+            // --- Client-side variables ---
+            var chat_hist = []
+            var response_hist = []
+            // Update client side chat history
+            function update_chat_history(userInput) {
+                chat_hist.push(userInput);
+                $('#prompt-hist').html(chat_hist.map(msg => '<p>' + msg + '</p>'));
+            }
+            function clear_chat_history() {
+                chat_hist = [];
+                $('#prompt-hist').html('');
+            }
+
+            // Update the client side reponse history
+            function update_response_history(modelOutput) {
+                response_hist.push(modelOutput);
+                console.log(response_hist.join("\n"))
+                $('#model-outputs').html(response_hist.join("\n"));
+            }
+            function clear_response_history() {
+                response_hist = [];
+                $('#model-outputs').html('');
+            }
+
+            // --- API calls ---
+            // Call the express API to generate code from prompt
+            async function eval_model_output(input) {
+                await $.get(`/api/generate?prompt=${input}`, function(data) {
+                    eval(data);
+                    viewer.render();
+                    update_response_history(data)
+                    hljs.highlightAll();
+                });
+            }
+
+            // --- Event Handler Definitions ---
+            // Handle form submission
+            function handleClickSubmit(event) {
+                event.preventDefault();
+                // Get user input from the form input
+                var userInput = $('#prompt-input').val();
+                update_chat_history(userInput)
+                $('#prompt-input').val('');
+                eval_model_output(userInput)
+            }
+
+            // Handle history clearing
+            function handleClickClear() {
+                clear_chat_history();
+                clear_response_history();
+                viewer.clear();
+            }
+
+            // Toggles light-mode
+            function setLightMode() {
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(element => {
+                    element.classList.add('light-mode');
+                });
+                viewer.setBackgroundColor("white");
+            }
+
+            // --- Event Handlers Attached ---
+            $('#prompt-form').on('submit', handleClickSubmit);
+
+            $('#prompt-form').on('reset', handleClickClear);
+
+            setLightMode()
+        </script>
+    </body>
+</html>
