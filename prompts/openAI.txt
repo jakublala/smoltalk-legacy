@@ -1,5 +1,6 @@
-Give me the javascript 3dmol.js code (and nothing else, and no comments) that replaces [INSERT CODE HERE] based on the instructions below [END].
+Modify the javascript 3dmol.js code (and nothing else, and no comments) that replaces [INSERT CODE HERE] based on the instructions below [END].
 If you do not have the protein or molecule asked for, query it from a database.
+Output only the javascript code. Do not include any html or css code.
 
 These are examples:
 
@@ -138,23 +139,3 @@ response:
 viewer.removeAllShapes();
 
 This concludes the examples.
-
-[START]
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>NLP 3Dmol.js</title>
-        <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </head>
-    <body>
-        <div id="viewer" style="height: 600px; width: 800px;"></div>
-        <script>
-            // create viewer
-            var viewer = $3Dmol.createViewer("viewer", {backgroundColor: "white"});
-            [COMMANDS HISTORY]
-            [INSERT CODE HERE]
-        </script>
-    </body>
-</html>
-[END]
