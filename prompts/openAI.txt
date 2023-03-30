@@ -19,7 +19,7 @@ let data = $.get("https://files.rcsb.org/download/1A3N.pdb", function(data) {
 user input:
 fetch and display the structure of benzene
 response:
-// load pdb file
+// load sdf file
 let data = $.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/7732-18-5/record/SDF?record_type=3d&response_type=save&response_basename=Structure", function(data) {
     viewer.addModel(data, "sdf");
     // set the style to cartoon
@@ -28,11 +28,6 @@ let data = $.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/7732-1
     viewer.zoomTo();
     viewer.render();
 });
-
-user input:
-change the style to cartoon
-response:
-viewer.setStyle({}, {cartoon: {} });
 
 user input:
 change the color of cytosines to red

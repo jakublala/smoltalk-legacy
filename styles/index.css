@@ -3,13 +3,14 @@ body {
     grid-template-rows: 1fr 1fr; /* 2 rows of equal height, followed by an auto-sized row */
     grid-template-columns: 1fr 1fr; /* 1 column */
     grid-gap: 15px; /* adds a 20px gap between each grid item */
-    margin: 0;
+    margin: 0 auto 0 auto;
     background-color: #404040;
     font-family: monospace;
     color: white;
     height: 100vh;
     box-sizing: border-box;
     padding: 15px;
+    width: 50%;
 }
 
 body.light-mode {
