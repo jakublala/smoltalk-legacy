@@ -36,6 +36,16 @@ response:
 viewer.setStyle({resn: "CYT"}, {stick: {color: "red"}});
 
 user input:
+change the color of cysteines to red
+response:
+viewer.setStyle({resn: "CYS"}, {cartoon: {color: "red"}});
+
+user input:
+change their display style to stick
+response:
+viewer.setStyle({resn: "CYS"}, {stick: {color: "red"}});
+
+user input:
 fetch the structure of oxamic acid and display it
 response:
 // getting and displaying the .sdf file for benzene and adding the model to the viewer
