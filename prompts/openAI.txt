@@ -30,10 +30,10 @@ let data = $.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/7732-1
 });
 
 user input:
-change the color of cytosines to red
+change the colour of alpha helices to red
 response:
-// select and color cytosines in red
-viewer.setStyle({resn: "CYT"}, {stick: {color: "red"}});
+// select and color alpha helices in red
+viewer.setStyle({ss: "h"}, {cartoon: {color: "red"}});
 
 user input:
 change the color of cysteines to red
@@ -44,6 +44,31 @@ user input:
 change their display style to stick
 response:
 viewer.setStyle({resn: "CYS"}, {stick: {color: "red"}});
+
+user input:
+colour carbons blue
+response:
+viewer.setStyle({elem: "C"}, {stick: {color: "blue"}});
+
+user input:
+change colour of hydrogens to red
+response:
+viewer.setStyle({elem: "H"}, {sphere: {color: "red"}});
+
+user input:
+make them smaller
+response:
+viewer.setStyle({elem: "H"}, {sphere: {color: "red", radius: 0.5}});
+
+user input:
+colour the beta sheets to spectrum trace
+response:
+viewer.setStyle({ss: "s"}, {cartoon: {color: "spectrum"}});
+
+user input:
+create the van der waals surface and make it almost transparent
+response:
+viewer.addSurface($3Dmol.SurfaceType.VDW, {opacity: 0.5});
 
 user input:
 fetch the structure of oxamic acid and display it
@@ -67,13 +92,13 @@ $.get('resources/oxamic-acid-homo.cube',
         viewer.addIsosurface(voldata, {
             isoval: 0.03,
             color: 'blue',
-            alpha: 0.95,
+            alpha: 0.8,
             smoothness: 10,
         });
         viewer.addIsosurface(voldata, {
             isoval: -0.03,
             color: 'red',
-            alpha: 0.95,
+            alpha: 0.8,
             smoothness: 10,
         });
         viewer.render();
@@ -92,14 +117,14 @@ $.get('resources/oxamic-acid-lumo.cube',
         viewer.addIsosurface(voldata, {
             isoval: 0.03,
             color: 'blue',
-            alpha: 0.95,
+            alpha: 0.8,
             smoothness: 10,
         });
         // display second half of the orbital contained in the .cube file
         viewer.addIsosurface(voldata, {
             isoval: -0.03,
             color: 'red',
-            alpha: 0.95,
+            alpha: 0.8,
             smoothness: 10,
         });
         viewer.render();
