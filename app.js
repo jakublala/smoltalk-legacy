@@ -5,7 +5,7 @@ const { Configuration, OpenAIApi } = require('openai');
 const app = express();
 const port = 3000;
 // let userInputs = []
-// let modelOutputs = []
+let modelOutputs = []
 
 // Start the server
 app.listen(port, () => {
@@ -44,8 +44,7 @@ app.get('/api/generate', async (req, res) => {
         // Get user input from query string
         let userInput = req.query.prompt;
         // userInputs.push(userInput)
-        let prompt = fs.readFileSync('prompts/openAI.txt', 'utf8') + userInput;;
-
+        let prompt = createPrompt(userInput)
         // Call OpenAI API with user input
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
@@ -56,11 +55,32 @@ app.get('/api/generate', async (req, res) => {
             max_tokens: 512,
             n: 1,
             });
-        // modelOutput = response.data.choices[0].message.content
-        // modelOutputs.push(modelOutput)
-        res.send(response.data.choices[0].message.content);
+        // Sending the model output to the client
+        modelOutput = response.data.choices[0].message.content
+        modelOutputs.push(modelOutput)
+        res.send(modelOutput);
+
+        // res.send(response.data.choices[0].message.content);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');
     }
 });
+
+function createPrompt(userInput) {
+    let template = fs.readFileSync('prompts/openAI.txt', 'utf8');
+    
+    let templateArray = template.split("\n");
+    if (modelOutputs.length > 0) {
+        let history = modelOutputs.join("\n");
+        templateArray[templateArray.length - 6] = history;
+    } else {
+      // remove the item from the array
+        templateArray.pop(templateArray.length - 6);
+    }
+    template = templateArray.join("\n");
+    
+    let prompt = template + userInput;
+    console.log(template)
+    return prompt
+}

@@ -152,6 +152,7 @@ This concludes the examples.
         <script>
             // create viewer
             var viewer = $3Dmol.createViewer("viewer", {backgroundColor: "white"});
+            [COMMANDS HISTORY]
             [INSERT CODE HERE]
         </script>
     </body>
