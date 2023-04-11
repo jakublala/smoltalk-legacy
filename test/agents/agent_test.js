@@ -13,6 +13,7 @@ import {
 
 const app = express();
 const port = 3000;
+const apiKey = process.env.OPENAI_API_KEY;
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -23,7 +24,7 @@ app.listen(port, () => {
 });
 
 
-// const model = new OpenAI({ openAIApiKey: "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", temperature: 0.9 });
+// const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
 // const template = "What is the PDB id or CAS rn for the following molecule, compound, or protein: {compound}?";
 // const prompt = new PromptTemplate({
 //   template: template,
@@ -34,7 +35,7 @@ app.listen(port, () => {
 // const res = await chain.call({ compound: "benzene" });
 // console.log(res);
 
-const model = new OpenAI({openAIApiKey: "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", temperature: 0 });
+const model = new OpenAI({openAIApiKey: apiKey, temperature: 0 });
 
 class ChemIDFetchTool extends Tool {
     constructor() {
@@ -45,7 +46,7 @@ class ChemIDFetchTool extends Tool {
     
     async _call(arg) {
         console.log("Using ChemIDFetch Tool");
-        const model = new OpenAI({ openAIApiKey: "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", temperature: 0.9 });
+        const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
         const template = "What is the PDB id or CAS rn for the following molecule, compound, or protein: {compound}?";
         const prompt = new PromptTemplate({
           template: template,
@@ -98,7 +99,7 @@ class GenerateCodeTool extends Tool {
     
     async _call(arg) {
         console.log("Using GenerateCode Tool");
-        const model = new OpenAI({ openAIApiKey: "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", temperature: 0.9 });
+        const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
         const template = `Give me the javascript 3dmol.js code (and nothing else, and no comments) that replaces [INSERT CODE HERE] based on the instructions below [END].
         If you do not have the protein or molecule asked for, query it from a database.
 

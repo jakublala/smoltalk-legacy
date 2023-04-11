@@ -4,6 +4,8 @@ const { Configuration, OpenAIApi } = require('openai');
 
 const app = express();
 const port = 3000;
+const apiKey = process.env.OPENAI_API_KEY;
+
 // let userInputs = []
 let modelOutputs = []
 
@@ -34,7 +36,7 @@ app.use(express.static(__dirname, {
 
 // Configure OpenAI API
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: apiKey,
 });
 const openai = new OpenAIApi(configuration);
 
