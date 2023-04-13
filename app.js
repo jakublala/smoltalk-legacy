@@ -1,12 +1,15 @@
-const express = require('express');
-const fs = require('fs');
-const { Configuration, OpenAIApi } = require('openai');
+import express from 'express';
+import fs from 'fs';
+import { Configuration, OpenAIApi } from 'openai';
+import path from 'path';
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 
 const app = express();
 const port = 3000;
 const apiKey = process.env.OPENAI_API_KEY;
 
-// let userInputs = []
 let modelOutputs = []
 
 // Start the server
@@ -34,11 +37,11 @@ app.use(express.static(__dirname, {
     }
 }));
 
+
 // Configure OpenAI API
 const configuration = new Configuration({
   apiKey: apiKey,
 });
-
 const openai = new OpenAIApi(configuration);
 
 // Handle the API request
@@ -46,41 +49,22 @@ app.get('/api/generate', async (req, res) => {
     try {
         // Get user input from query string
         let userInput = req.query.prompt;
-        let systemPrompt = fs.readFileSync('prompts/openAI.txt', 'utf8');
-        let code, lines;
-        
-        // if activeCode does not exist, read code.txt
-        if (activeCode == null) {
-          code = fs.readFileSync('prompts/code.txt', 'utf8');
-        } else {
-          lines = activeCode.split('\n');
-          code = fs.readFileSync('prompts/code.txt', 'utf8');
-          lines = code.split('\n');
-          // add active code above [INSERT CODE HERE]
-          lines.splice(lines.indexOf('[INSERT CODE HERE]') - 1, 0, activeCode);
-          code = lines.join('\n');
-        }
-
-        let prompt = systemPrompt + code + userInput;;
-
+        // userInputs.push(userInput)
+        let prompt = createPrompt(userInput)
         // Call OpenAI API with user input
-        try {
-          const response = await openai.createChatCompletion({
-              model: 'gpt-3.5-turbo',
-              messages: [{
-                  role: 'user',
-                  content: prompt,
-              }],
-              max_tokens: 512,
-              n: 1,
-          });
-          activeCode = response.data.choices[0].message.content;
-          res.send(activeCode);
-          console.log(activeCode)
-          } catch (error) {
-              console.error(error);
-          }
-
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: [{
+                role: 'user',
+                content: prompt,
+            }],
+            max_tokens: 512,
+            n: 1,
+            });
+        // Sending the model output to the client
+        modelOutput = response.data.choices[0].message.content
+        modelOutputs.push(modelOutput)
+        res.send(modelOutput);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');
