@@ -39,6 +39,7 @@ app.listen(port, () => {
 const model = new OpenAI({openAIApiKey: apiKey, temperature: 0 });
 
 class ChemIDFetchTool extends Tool {
+    // TODO: this needs to be re-done and not just use an LLM to fetch stuff
     constructor() {
         super();
         this.name = 'ChemIDFetchTool';
@@ -56,7 +57,6 @@ class ChemIDFetchTool extends Tool {
         const chain = new LLMChain({ llm: model, prompt: prompt });
 
         const res = await chain.call({ compound: arg });
-        console.log(res.text)
         return res.text.concat('\n');
     }
 }
@@ -102,20 +102,23 @@ class GenerateCodeTool extends Tool {
         If you do not have the protein or molecule asked for, query it from a database.
 =======
         const model = new OpenAI({ openAIApiKey: "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", temperature: 0.9 });
+<<<<<<< HEAD
         // read a file
         let template = fs.readFileSync('../../prompts/openAI.txt', 'utf8');
 >>>>>>> 079c033 (first clean up)
+=======
+>>>>>>> c79c51a (minor clean up)
 
         // escape all the curly brackets in the template
-        template = fs.readFileSync('../../prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}');
+        const template = fs.readFileSync('../../prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
 
         const prompt = new PromptTemplate({
-            inputVariables: [],
-            template: template + arg,
+            inputVariables: ["instructions"],
+            template: template,
         });
         const chain = new LLMChain({ llm: model, prompt: prompt });
 
-        const res = await chain.call();
+        const res = await chain.call({ instructions: arg });
         return res;
     }
 }
