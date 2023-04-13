@@ -83,19 +83,8 @@ class GenerateCodeTool extends Tool {
     }
     
     async _call(arg) {
-<<<<<<< HEAD
         console.log("Using GenerateCode Tool");
         const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
-        const template = `Give me the javascript 3dmol.js code (and nothing else, and no comments) that replaces [INSERT CODE HERE] based on the instructions below [END].
-        If you do not have the protein or molecule asked for, query it from a database.
-=======
-        const model = new OpenAI({ openAIApiKey: "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", temperature: 0.9 });
-<<<<<<< HEAD
-        // read a file
-        let template = fs.readFileSync('../../prompts/openAI.txt', 'utf8');
->>>>>>> 079c033 (first clean up)
-=======
->>>>>>> c79c51a (minor clean up)
 
         // escape all the curly brackets in the template
         const template = fs.readFileSync('../../prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
