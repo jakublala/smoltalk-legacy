@@ -24,18 +24,6 @@ app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 
-
-// const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
-// const template = "What is the PDB id or CAS rn for the following molecule, compound, or protein: {compound}?";
-// const prompt = new PromptTemplate({
-//   template: template,
-//   inputVariables: ["compound"],
-// });
-// const chain = new LLMChain({ llm: model, prompt: prompt });
-
-// const res = await chain.call({ compound: "benzene" });
-// console.log(res);
-
 const model = new OpenAI({openAIApiKey: apiKey, temperature: 0 });
 
 class ChemIDFetchTool extends Tool {
