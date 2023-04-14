@@ -2,9 +2,10 @@ import express from 'express';
 import fs from 'fs';
 import { Configuration, OpenAIApi } from 'openai';
 import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 
 const app = express();
 const port = 3000;
@@ -62,7 +63,7 @@ app.get('/api/generate', async (req, res) => {
             n: 1,
             });
         // Sending the model output to the client
-        modelOutput = response.data.choices[0].message.content
+        let modelOutput = response.data.choices[0].message.content
         modelOutputs.push(modelOutput)
         res.send(modelOutput);
     } catch (error) {
