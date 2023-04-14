@@ -4,6 +4,7 @@ import { Configuration, OpenAIApi } from 'openai';
 import path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
+import { executor } from './src/agent/agent.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -38,7 +39,6 @@ app.use(express.static(__dirname, {
     }
 }));
 
-
 // Configure OpenAI API
 const configuration = new Configuration({
   apiKey: apiKey,
@@ -49,23 +49,22 @@ const openai = new OpenAIApi(configuration);
 app.get('/api/generate', async (req, res) => {
     try {
         // Get user input from query string
-        let userInput = req.query.prompt;
-        // userInputs.push(userInput)
-        let prompt = createPrompt(userInput)
-        // Call OpenAI API with user input
-        const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
-            messages: [{
-                role: 'user',
-                content: prompt,
-            }],
-            max_tokens: 512,
-            n: 1,
-            });
-        // Sending the model output to the client
-        let modelOutput = response.data.choices[0].message.content
-        modelOutputs.push(modelOutput)
-        res.send(modelOutput);
+        let input = req.query.prompt;
+
+        // const input = 'display benzene'
+        let modelOutput = await executor.call({ input });
+
+        // get length of intermediate steps
+        let len = modelOutput.intermediateSteps.length;
+        console.log('interdiamediate steps', modelOutput.intermediateSteps)
+        // get last step
+        let lastStep = modelOutput.intermediateSteps[len - 1];
+        console.log('last step', lastStep)
+        // get the observation
+        let observation = lastStep.observation.text;
+        console.log('observation', observation)
+        modelOutputs.push(observation)
+        res.send(observation);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');

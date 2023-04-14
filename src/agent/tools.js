@@ -2,7 +2,11 @@ import fs from 'fs';
 import { OpenAI } from "langchain/llms";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
-import {Tool} from "langchain/tools";
+import { Tool } from "langchain/tools";
+import dotenv from 'dotenv';
+dotenv.config();
+const apiKey = process.env.OPENAI_API_KEY;
+
 
 class ChemIDFetchTool extends Tool {
     // TODO: this needs to be re-done and not just use an LLM to fetch stuff
@@ -64,7 +68,7 @@ class GenerateCodeTool extends Tool {
         const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
 
         // escape all the curly brackets in the template
-        const template = fs.readFileSync('../../prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
+        const template = fs.readFileSync('./prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
 
         const prompt = new PromptTemplate({
             inputVariables: ["instructions"],
@@ -77,3 +81,4 @@ class GenerateCodeTool extends Tool {
     }
 }
 
+export { ChemIDFetchTool, RequestPDBGetTool, RequestCASGetTool, GenerateCodeTool };
