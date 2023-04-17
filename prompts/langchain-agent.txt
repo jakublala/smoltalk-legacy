@@ -1,0 +1,3 @@
+Your goal is to always finish with generating code. Always start by using LookAtActiveCode to see the current code.
+Before doing anything, always look at the current active code, so that you adjust your actions accordingly.
+Your specific task is to:

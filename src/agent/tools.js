@@ -4,81 +4,110 @@ import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Tool } from "langchain/tools";
 import dotenv from 'dotenv';
+import { getPdb, getCID } from '../utils/api.js';
+
+let activeCode = [];
+
 dotenv.config();
 const apiKey = process.env.OPENAI_API_KEY;
 
-
-class ChemIDFetchTool extends Tool {
-    // TODO: this needs to be re-done and not just use an LLM to fetch stuff
+class GetPDBTool extends Tool {
     constructor() {
         super();
-        this.name = 'ChemIDFetchTool';
-        this.description = 'Retrieves the PDB id or CAS rn for a specific molecule, compound, or protein.';
+        this.name = 'GetPDBTool';
+        this.description = 'Finds the most relevant PDB ID given a name of a protein, or a protein complex.';
     }
     
     async _call(arg) {
-        const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
-        const template = "What is the PDB id or CAS rn for the following molecule, compound, or protein: {compound}?";
-        const prompt = new PromptTemplate({
+        let out = await getPdb(arg);
+        if (out === undefined) {
+            out = 'No PDB file found for this name.'
+        }
+        return out;
+    }
+}
+
+class GetCASTool extends Tool {
+    constructor() {
+      super();
+      this.name = 'GetCASTool';
+      this.description = 'Finds the most relevant CAS ID given a name of a chemical compound.';
+    }
+  
+    async _call(arg) {
+      const cid = await getCID(arg);
+      if (cid === null) {
+        return 'No CAS ID found for this compound name.';
+      } else {
+        return cid;
+      }
+    }
+  }
+
+class ExecuteCodeTool extends Tool {
+  constructor() {
+      super();
+      this.name = 'ExecuteCodeTool';
+      this.description = `Generates code to manipulate a 3dmoljs viewer based on the input. 
+      If you need to download the structure, input " PDB ID or PubChem ID | task" , otherwise just give "task" from earlier.`;
+      this.generatedCode = [];
+  }
+
+  createTemplate() {
+      let template = fs.readFileSync('./prompts/langchain-code.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
+
+      let templateArray = template.split("\n");
+      if (activeCode.length > 0) {
+          templateArray[templateArray.length - 7] = '{activeCode}';
+      } else {
+          // remove the item from the array
+          templateArray.pop(templateArray.length - 7);
+      }
+      template = templateArray.join("\n");
+
+      return template
+  }
+
+  async _call(arg) {
+      const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0 , model: "gpt-3.5-turbo"});
+
+      // escape all the curly brackets in the template
+      const template = this.createTemplate();
+
+      const prompt = new PromptTemplate({
+          inputVariables: ["instructions", "activeCode"],
           template: template,
-          inputVariables: ["compound"],
-        });
-        const chain = new LLMChain({ llm: model, prompt: prompt });
+      });
+      const chain = new LLMChain({ llm: model, prompt: prompt });
 
-        const res = await chain.call({ compound: arg });
-        return res.text.trim();
-    }
+      console.log('active Code', activeCode.join("\n"))
+
+      const res = await chain.call({ instructions: arg , activeCode: activeCode.join("\n")});
+
+      // add the generated code to the active code
+      activeCode.push(res.output);
+
+      return res;
+  }
 }
 
-class RequestPDBGetTool extends Tool {
-    constructor() {
-        super();
-        this.name = 'RequestPDBGetTool';
-        this.description = 'Returns a link for retrieving a .pdb file, provided a PDB id';
+class LookAtActiveCode extends Tool {
+  constructor() {
+      super();
+      this.name = 'LookAtActiveCode';
+      this.description = 'Always use this tool at the start of the chain.';
+  }
+
+  async _call(arg) {
+    // if active code is empty
+    console.log(activeCode)
+    if (activeCode.length === 0) {
+      return 'No active code to display.';
     }
-    
-    _call(arg) {
-        let out = `https://files.rcsb.org/download/${arg}.pdb`
-        return out;
+    else {
+      return activeCode.join("\n");
     }
+  }
 }
 
-class RequestCASGetTool extends Tool {
-    constructor() {
-        super();
-        this.name = 'RequestPDBGetTool';
-        this.description = 'Returns a link for retrieving an .sdf file, provided a CAS rn number';
-    }
-    
-    _call(arg) {
-        let out = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${arg}/record/SDF?record_type=3d&response_type=save&response_basename=Structure`
-        return out;
-    }
-}
-
-class GenerateCodeTool extends Tool {
-    constructor() {
-        super();
-        this.name = 'GenerateCodeTool';
-        this.description = 'Generates code to manipulate a 3dmoljs viewer. The code is generated based on the input.';
-    }
-    
-    async _call(arg) {
-        // TODO: add a fixed way of using an API to get structures
-        const model = new OpenAI({ openAIApiKey: apiKey, temperature: 0.9 });
-
-        // escape all the curly brackets in the template
-        const template = fs.readFileSync('./prompts/openAI.txt', 'utf8').replace(/{/g, '{{').replace(/}/g, '}}') + '\n{instructions}';
-
-        const prompt = new PromptTemplate({
-            inputVariables: ["instructions"],
-            template: template,
-        });
-        const chain = new LLMChain({ llm: model, prompt: prompt });
-
-        const res = await chain.call({ instructions: arg });
-        return res;
-    }
-}
-
-export { ChemIDFetchTool, RequestPDBGetTool, RequestCASGetTool, GenerateCodeTool };
+export { LookAtActiveCode, GetPDBTool, GetCASTool, ExecuteCodeTool };

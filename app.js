@@ -51,18 +51,16 @@ app.get('/api/generate', async (req, res) => {
         // Get user input from query string
         let input = req.query.prompt;
 
-        // const input = 'display benzene'
+        // Create the prompt
+        input = fs.readFileSync('prompts/langchain-agent.txt', 'utf8') + input;
+
         let modelOutput = await executor.call({ input });
 
-        // get length of intermediate steps
-        let len = modelOutput.intermediateSteps.length;
-        console.log('interdiamediate steps', modelOutput.intermediateSteps)
-        // get last step
-        let lastStep = modelOutput.intermediateSteps[len - 1];
-        console.log('last step', lastStep)
-        // get the observation
-        let observation = lastStep.observation.text;
-        console.log('observation', observation)
+        // store modelOutput inside a json file
+        fs.writeFileSync('modelOutput.json', JSON.stringify(modelOutput, null, 2));
+
+        let observation = modelOutput.intermediateSteps[modelOutput.intermediateSteps.length - 1].observation.text.trim();
+
         modelOutputs.push(observation)
         res.send(observation);
     } catch (error) {
@@ -70,21 +68,3 @@ app.get('/api/generate', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
-
-function createPrompt(userInput) {
-    let template = fs.readFileSync('prompts/openAI.txt', 'utf8');
-    
-    let templateArray = template.split("\n");
-    if (modelOutputs.length > 0) {
-        let history = modelOutputs.join("\n");
-        templateArray[templateArray.length - 6] = history;
-    } else {
-      // remove the item from the array
-        templateArray.pop(templateArray.length - 6);
-    }
-    template = templateArray.join("\n");
-    
-    let prompt = template + userInput;
-    console.log(template)
-    return prompt
-}

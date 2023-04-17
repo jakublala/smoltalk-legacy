@@ -15,6 +15,7 @@ app.listen(port, () => {
 const input = "display benzene"
 
 console.log(`Executing with input "${input}"...\n`);
-const result = await executor.call({ input });
+// const result = await executor.call({ input });
+const result = await executor.run({ input });
 
 console.log(`Got output ${result.output}\n`);
