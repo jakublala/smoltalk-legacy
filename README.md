@@ -6,7 +6,7 @@ It was created by [Jakub Lála](https://github.com/jakublala) and [Sean Warren](
 A demo can be found in a twitter thread [here](https://twitter.com/jakublala/status/1641446457998974979).
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/68380659/232779040-de62bf38-9bfb-476a-9b17-ad2e8886f206.png" width="50%">
+<img src="https://user-images.githubusercontent.com/68380659/232779040-de62bf38-9bfb-476a-9b17-ad2e8886f206.png" width="100%">
 </p>
 
 ## How to run
