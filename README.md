@@ -1,4 +1,7 @@
 # sMolTalk: natural language interface to 3Dmol.js
+
+[![DOI](https://zenodo.org/badge/621216384.svg)](https://zenodo.org/badge/latestdoi/621216384)
+
 sMolTalk is a proof-of-concept that uses OpenAI's GPT-3.5 to generate 3dmol.js code based on natural language input. 
 
 It was created by [Jakub Lála](https://github.com/jakublala) and [Sean Warren](https://github.com/seankwarren) as a part of the LLM Hackathon in Chemistry.
