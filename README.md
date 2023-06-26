@@ -40,3 +40,6 @@ A demo can be found in a twitter thread [here](https://twitter.com/jakublala/sta
 2. colour the beta sheets to spectrum
 3. make the cysteines on the beta sheets into black spheres
 4. create the van der waals surface
+
+## Limitations
+Note that this implementation is heavily limited by prompt leakage, as GPT-3.5 does not contain much 3dmol.js documentation in its training data. A more reasonable proof-of-concept example would be the use of GPT-4 for generating commands for [PyMOL](https://pymol.org/2/), similar to [this implementation](https://github.com/JinyuanSun/ChatMol). The balance between learning from training data and from few-shot examples is very delicate and it's likely that a reliable model would require both some training data input, as well as in-context learning with augmented retrieval and some few-shot examples to understand the formatting requirements.
